@@ -19,7 +19,7 @@ class CliArguments:
     input_file: Optional[str] = None
     encoding: Optional[str] = None
     no_skip_header: Optional[bool] = None
-    filter: Optional[str] = None
+    query: Optional[str] = None
 
 
 def arguments_parse() -> CliArguments:
@@ -51,18 +51,18 @@ def arguments_parse() -> CliArguments:
         help="do not skip the header line (default: %(default)s)",
     )
     parser.add_argument(
-        "-f",
-        "--filter",
+        "-q",
+        "--query",
         required=True,
-        dest="filter",
-        help="filter predicate to be applied to the CSV file",
+        dest="query",
+        help="query predicate to be applied to the CSV file",
     )
     parsed_args = parser.parse_args()
     args_dict = vars(parsed_args)
     return CliArguments(**args_dict)
 
 
-def csv_pred(arguments: CliArguments) -> int:
+def csv_query(arguments: CliArguments) -> int:
     """
     Run a filter on the CSV file and output the matching rows
     """
@@ -88,7 +88,7 @@ def csv_pred(arguments: CliArguments) -> int:
         #     header = next(reader)
         #     print(header)
 
-        parser = Parser(arguments.filter)
+        parser = Parser(arguments.query)
         ast = parser.parse()
         parser.dump_ast(ast)
 
@@ -116,5 +116,5 @@ def csv_pred(arguments: CliArguments) -> int:
 
 if __name__ == "__main__":
     args = arguments_parse()
-    ret = csv_pred(args)
+    ret = csv_query(args)
     sys.exit(ret)
