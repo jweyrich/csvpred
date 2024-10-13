@@ -60,7 +60,7 @@ attribute = (
 )
 
 cmp_operator = (
-    pp.one_of(["!=", "==", "<=", ">=", "=", "<", ">"])
+    pp.one_of(["!=", "==", "<=", ">=", "<", ">"])
     .set_results_name("cmp_operator")
     .set_parse_action(CmpOperator.parse)
 )
