@@ -8,6 +8,21 @@ from query.grammar import Grammar
 from query.parser import Parser
 
 
+def make_filter(ast):
+    """
+    Create a filter function to filter each row
+    """
+    def run_filter(row) -> bool:
+        # The first element of the AST is the Grammar node
+        grammar = ast[0]
+        if not isinstance(grammar, Grammar):
+            raise ValueError(f"Unknown grammar {grammar}")
+        result = grammar.evaluate(row)
+        return result
+
+    return run_filter
+
+
 def csv_query(arguments: CliArguments) -> int:
     """
     Run a filter on the CSV file and output the matching rows
@@ -37,23 +52,10 @@ def csv_query(arguments: CliArguments) -> int:
         if arguments.debug_ast:
             parser.dump_ast(ast)
 
-        def make_filter(ast):
-            def run_filter(row) -> bool:
-                grammar = ast[0]
-                if not isinstance(grammar, Grammar):
-                    raise ValueError(f"Unknown grammar {grammar}")
-                result = grammar.evaluate(row)
-                return result
-
-            return run_filter
-
-        results = []
         filter_fn = make_filter(ast)
-        results = filter(filter_fn, reader)
-
-        text = json.dumps(list(results))
-        # print(f'Columns = {reader.fieldnames}')
-        print(text)
+        results = list(filter(filter_fn, reader))
+        output = json.dumps(results)
+        print(output)
     return 0
 
 
