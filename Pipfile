@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+dataclass-wizard = "==0.23.*"
+requests = "==2.32.*"
+tabulate = "==0.9.*"
+"tabulate[widechars]" = "==0.9.*"
+colorama = "==0.4.*"
+paramiko = "==3.5.*"
+pyparsing = "==3.1.*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.12"
