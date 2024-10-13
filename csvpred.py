@@ -17,6 +17,7 @@ class CliArguments:
     """
 
     input_file: Optional[str] = None
+    debug_ast: Optional[bool] = None
     encoding: Optional[str] = None
     fieldnames: Optional[str] = None
     no_skip_header: Optional[bool] = None
@@ -34,6 +35,14 @@ def arguments_parse() -> CliArguments:
         required=True,
         dest="input_file",
         help="path to the input CSV file (default: %(default)s)",
+    )
+    parser.add_argument(
+        "--debug-ast",
+        required=False,
+        default=False,
+        dest="debug_ast",
+        action="store_true",
+        help="print the AST (default: %(default)s)",
     )
     parser.add_argument(
         "-e",
@@ -95,7 +104,9 @@ def csv_query(arguments: CliArguments) -> int:
 
         parser = Parser(arguments.query)
         ast = parser.parse()
-        parser.dump_ast(ast)
+
+        if arguments.debug_ast:
+            parser.dump_ast(ast)
 
         def make_filter(ast):
             def run_filter(row) -> bool:
@@ -112,10 +123,8 @@ def csv_query(arguments: CliArguments) -> int:
         results = filter(filter_fn, reader)
 
         text = json.dumps(list(results))
-        print("#" * 120)
         # print(f'Columns = {reader.fieldnames}')
         print(text)
-        print("#" * 120)
     return 0
 
 

@@ -1,3 +1,5 @@
+import sys
+
 import pyparsing as pp
 
 from .grammar import grammar
@@ -38,7 +40,7 @@ class Parser(object):
         Dump the AST to the console.
         """
         text = f"('{node}')" if isinstance(node, str) else ""
-        print(tab + "┗━ " + str(node.__class__.__name__) + text)
+        print(tab + "┗━ " + str(node.__class__.__name__) + text, file=sys.stderr)
         if isinstance(node, Node):
             for child in node.children:
                 self.dump_ast(child, tab + "   ")
