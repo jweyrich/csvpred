@@ -193,7 +193,7 @@ class NegateExpression(Node):
         operator = value[0]
         if (
             not isinstance(operator, BoolUnaryOperator)
-            or not operator.operator == "NOT"
+            or not (operator.operator == "NOT" or operator.operator == "!")
         ):
             raise ValueError(
                 f"Expected a BoolUnaryOperator, got {type(operator)} {operator}"

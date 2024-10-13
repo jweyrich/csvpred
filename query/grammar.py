@@ -22,18 +22,20 @@ lparen = pp.Suppress("(")
 rparen = pp.Suppress(")")
 
 # Bool operators
-and_, or_, not_, xor_ = pp.CaselessKeyword.using_each("AND OR NOT XOR".split())
+and_, and2, or_, or2, not_, not2, xor_, xor2 = pp.CaselessKeyword.using_each(
+    "AND && OR || NOT ! XOR ^".split()
+)
 bool_unary_operator = (
-    pp.Group(not_)
+    pp.Group(not_ | not2)
     .set_results_name("bool_unary_operator")
     .set_parse_action(BoolUnaryOperator.parse)
 )
 bool_binary_operator = (
-    pp.Group(and_ | or_ | xor_)
+    pp.Group(and_ | and2 | or_ | or2 | xor_ | xor2)
     .set_results_name("bool_binary_operator")
     .set_parse_action(BoolBinaryOperator.parse)
 )
-# keyword = and_ | or_ | not_ | xor_
+# keyword = and_ | and2 | or_ | or2 | not_ | not2 | xor_ | xor2
 
 # A number is a sequence of digits, optionally preceded by a minus sign
 integer_ = (
@@ -118,22 +120,22 @@ grammar <<= (
         expression,
         [
             # (
-            #     (not_ | "!").set_parse_action(negate_expression_action),
+            #     (not_ | not2).set_parse_action(negate_expression_action),
             #     1,
             #     pp.OpAssoc.RIGHT,
             # ),
             (
-                (and_ | "&&").set_parse_action(BoolBinaryOperator.parse),
+                (and_ | and2).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
             (
-                (or_ | "||").set_parse_action(BoolBinaryOperator.parse),
+                (or_ | or2).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
             (
-                (xor_ | "^").set_parse_action(BoolBinaryOperator.parse),
+                (xor_ | xor2).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
