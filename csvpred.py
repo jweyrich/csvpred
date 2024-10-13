@@ -6,8 +6,6 @@ from dataclasses import dataclass
 from signal import SIG_DFL, SIGPIPE, signal
 from typing import Optional
 
-import pyparsing as pp
-
 from query.grammar import Grammar
 from query.parser import Parser
 
@@ -82,7 +80,7 @@ def csv_pred(arguments: CliArguments) -> int:
             # fieldnames=fieldnames,
             delimiter=",",
             quotechar='"',
-            skipinitialspace=True, # Ignore spaces in the beginning of the field
+            skipinitialspace=True,  # Ignore spaces in the beginning of the field
         )
 
         # if not arguments.no_skip_header:
