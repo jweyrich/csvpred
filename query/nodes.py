@@ -40,7 +40,7 @@ class Grammar(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{Grammar.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         exprs = value
         return Grammar(exprs=exprs)
@@ -67,7 +67,7 @@ class Expression(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{Expression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         exprs = value
         return Expression(exprs=exprs)
@@ -90,7 +90,7 @@ class Identifier(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{Identifier.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         value = value[0]
         return Identifier(value=value)
@@ -116,7 +116,7 @@ class Comparison(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{Comparison.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         ident = value[0]
         oper = value[1]
@@ -143,7 +143,7 @@ class CmpOperator(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{CmpOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value
         return CmpOperator(operator=operator)
@@ -163,7 +163,7 @@ class BoolUnaryOperator(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{BoolUnaryOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
         return BoolUnaryOperator(operator=operator)
@@ -184,7 +184,7 @@ class NegateExpression(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{NegateExpression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
         not_opers = ["NOT", "!"]
@@ -219,7 +219,7 @@ class BinaryExpression(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{BinaryExpression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         left = value[0]
         operator = value[1]
@@ -246,7 +246,7 @@ class BoolBinaryOperator(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{BoolBinaryOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
         return BoolBinaryOperator(operator=operator)
@@ -266,7 +266,7 @@ class LiteralValue(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{LiteralValue.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         return LiteralValue(value=value)
 
@@ -285,7 +285,7 @@ class Attribute(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
-        # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
+        # print(f"{Attribute.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         name = value
         return Attribute(name=name)
