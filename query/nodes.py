@@ -56,15 +56,11 @@ class Expression(Node):
 
     def evaluate(self, row):
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
-        if isinstance(self.expressions, Expression):
-            return self.expressions.evaluate(row)
-        elif isinstance(self.expressions, NegateExpression):
-            return self.expressions.evaluate(row)
-        elif isinstance(self.expressions, BinaryExpression):
-            return self.expressions.evaluate(row)
-        elif isinstance(self.expressions, Comparison):
-            return self.expressions.evaluate(row)
-        elif isinstance(self.expressions, Identifier):
+        accepted_types = (
+            Expression | NegateExpression | BinaryExpression | Comparison | Identifier
+        )
+        # This requires Python >= 3.10 (PEP 604)
+        if isinstance(self.expressions, accepted_types):
             return self.expressions.evaluate(row)
         else:
             raise ValueError(f"Unknown expression {type(self)} {self}")
@@ -191,9 +187,10 @@ class NegateExpression(Node):
         # print("%s.parse: %s" % (self.__class__.__name__, repr(tokens)))
         value = tokens[0]
         operator = value[0]
+        not_opers = ["NOT", "!"]
         if (
             not isinstance(operator, BoolUnaryOperator)
-            or not (operator.operator == "NOT" or operator.operator == "!")
+            or not operator.operator in not_opers
         ):
             raise ValueError(
                 f"Expected a BoolUnaryOperator, got {type(operator)} {operator}"
