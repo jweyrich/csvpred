@@ -19,6 +19,8 @@ def exec_bool_binary_operator(operator, left, right):
         return left and right
     elif operator == "or" or operator == "||":
         return left or right
+    elif operator == "xor" or operator == "^":
+        return left ^ right
     else:
         raise ValueError(f"Unknown bool_binary_operator {operator}")
 
