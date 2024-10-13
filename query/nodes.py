@@ -321,7 +321,7 @@ class Attribute(Node):
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         # print(f"{Attribute.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
-        name = value
+        name = value[0]
         return Attribute(name=name)
 
     def __repr__(self) -> str:

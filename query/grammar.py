@@ -52,9 +52,9 @@ float_ = (
     .add_parse_action(lambda tokens: float(tokens[0]))
 )
 
-# Attribute names can contain letters, numbers, underscores, and hyphens
+# Attribute starts with a dot followed by a sequence of letters, digits, underscores, dashes
 attribute = (
-    pp.Word(pp.alphas + "_-", pp.alphanums + "_-")
+    pp.Group(pp.Suppress(".") + pp.Word(pp.alphas + "_-", pp.alphanums + "_-"))
     .set_results_name("attribute")
     .set_parse_action(Attribute.parse)
 )
