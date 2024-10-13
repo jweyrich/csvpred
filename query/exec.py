@@ -3,7 +3,7 @@ def exec_bool_unary_operator(operator, right):
     Execute a boolean unary operator.
     """
     # print("#### exec_bool_unary_operator", operator, right)
-    if operator == "not":
+    if operator == "not" or operator == "!":
         return not right
     else:
         raise ValueError(f"Unknown bool_unary_operator {operator}")
@@ -19,8 +19,6 @@ def exec_bool_binary_operator(operator, left, right):
         return left and right
     elif operator == "or" or operator == "||":
         return left or right
-    elif operator == "not" or operator == "!":
-        return not right
     else:
         raise ValueError(f"Unknown bool_binary_operator {operator}")
 
