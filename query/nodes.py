@@ -1,3 +1,4 @@
+import sys
 from abc import ABC, abstractmethod
 from typing import Self
 
@@ -310,7 +311,11 @@ class Attribute(Node):
 
     def evaluate(self, row):
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
-        return row[self.name]
+        try:
+            return row[self.name]
+        except KeyError:
+            print(f"Column not found: {self.name}", file=sys.stderr)
+            return None
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
