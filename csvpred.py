@@ -22,6 +22,7 @@ def csv_query(arguments: CliArguments) -> int:
             fieldnames=fieldnames,
             delimiter=",",
             quotechar='"',
+            quoting=csv.QUOTE_NONNUMERIC,
             skipinitialspace=True,  # Ignore spaces in the beginning of the field
         )
 
