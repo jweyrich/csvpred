@@ -25,11 +25,13 @@ rparen = pp.Suppress(")")
 and_, and2, or_, or2, not_, not2, xor_, xor2 = pp.CaselessKeyword.using_each(
     "AND && OR || NOT ! XOR ^".split()
 )
+
 bool_unary_operator = (
     pp.Group(not_ | not2)
     .set_results_name("bool_unary_operator")
     .set_parse_action(BoolUnaryOperator.parse)
 )
+
 bool_binary_operator = (
     pp.Group(and_ | and2 | or_ | or2 | xor_ | xor2)
     .set_results_name("bool_binary_operator")
@@ -43,6 +45,7 @@ integer_ = (
     .set_name("integer")
     .add_parse_action(lambda tokens: int(tokens[0]))
 )
+
 float_ = (
     pp.Regex(r"[+-]?\d+\.\d*([Ee][+-]?\d+)?")
     .set_name("float")

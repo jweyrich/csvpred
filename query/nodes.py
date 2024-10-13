@@ -3,8 +3,6 @@ from typing import Self
 
 import pyparsing as pp
 
-from .exec import exec_bool_binary_operator, exec_bool_unary_operator, exec_cmp_operator
-
 
 class Node(ABC):
     """
@@ -111,8 +109,7 @@ class Comparison(Node):
         left = self.identifier.evaluate(row)
         operator = self.operator.evaluate()
         right = self.value.evaluate()
-
-        return exec_cmp_operator(operator, left, right)
+        return self._exec(operator, left, right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
@@ -130,6 +127,26 @@ class Comparison(Node):
             self.operator,
             self.value,
         )
+
+    def _exec(self, operator, left, right):
+        """
+        Execute a comparison operator.
+        """
+        # print("#### exec_cmp_operator", operator, left, right)
+        if operator == "==":
+            return left == right
+        elif operator == "!=":
+            return left != right
+        elif operator == "<":
+            return left < right
+        elif operator == "<=":
+            return left <= right
+        elif operator == ">":
+            return left > right
+        elif operator == ">=":
+            return left >= right
+        else:
+            raise ValueError(f"Unknown operator {operator}")
 
 
 class CmpOperator(Node):
@@ -180,7 +197,7 @@ class NegateExpression(Node):
     def evaluate(self, row):
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         right = self.expression.evaluate(row)
-        return exec_bool_unary_operator("not", right)
+        return self._exec("not", right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
@@ -201,6 +218,15 @@ class NegateExpression(Node):
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__, self.expression)
 
+    def _exec(self, operator, right):
+        """
+        Execute a boolean unary operator.
+        """
+        if operator == "not" or operator == "!":
+            return not right
+        else:
+            raise ValueError(f"Unknown bool_unary_operator {operator}")
+
 
 class BinaryExpression(Node):
     def __init__(self, left, operator, right):
@@ -214,8 +240,7 @@ class BinaryExpression(Node):
         left = self.left.evaluate(row)
         operator = self.operator.evaluate()
         right = self.right.evaluate(row)
-
-        return exec_bool_binary_operator(operator, left, right)
+        return self._exec(operator, left, right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
@@ -233,6 +258,20 @@ class BinaryExpression(Node):
             self.operator,
             self.right,
         )
+
+    def _exec(self, operator, left, right):
+        """
+        Execute a boolean binary operator.
+        """
+        operator = operator.lower()
+        if operator == "and" or operator == "&&":
+            return left and right
+        elif operator == "or" or operator == "||":
+            return left or right
+        elif operator == "xor" or operator == "^":
+            return left ^ right
+        else:
+            raise ValueError(f"Unknown bool_binary_operator {operator}")
 
 
 class BoolBinaryOperator(Node):
