@@ -70,7 +70,7 @@ quoted_string = pp.QuotedString('"')
 # How to find the non-alphanum character set? `grep -o . data.csv | sort | uniq -c`
 literal_value = (
     # (pp.Word(pp.alphanums + "#&-./:=?_`") | pp.QuotedString('"') | integer_ | float_)
-    (pp.Word(pp.alphanums + "-_") | quoted_string | integer_ | float_)
+    (float_ | integer_ | pp.Word(pp.alphanums + "-_") | quoted_string)
     .set_results_name("literal_value")
     .set_parse_action(LiteralValue.parse)
 )
