@@ -39,7 +39,7 @@ class Parser(object):
         """
         Dump the AST to the console.
         """
-        text = f"('{node}')" if isinstance(node, str) else ""
+        text = f"('{node}')" if isinstance(node, str | float | int) else ""
         print(tab + "┗━ " + str(node.__class__.__name__) + text, file=sys.stderr)
         if isinstance(node, Node):
             for child in node.children:
