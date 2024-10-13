@@ -18,6 +18,7 @@ class CliArguments:
 
     input_file: Optional[str] = None
     encoding: Optional[str] = None
+    fieldnames: Optional[str] = None
     no_skip_header: Optional[bool] = None
     query: Optional[str] = None
 
@@ -37,9 +38,17 @@ def arguments_parse() -> CliArguments:
     parser.add_argument(
         "-e",
         "--encoding",
+        required=False,
         default="utf-8",
         dest="encoding",
         help="encoding of the input CSV file (default: %(default)s)",
+    )
+    parser.add_argument(
+        "-f",
+        "--fieldnames",
+        required=False,
+        dest="fieldnames",
+        help="specify alternative column names separated by commas (example: col1,col2,col3)",
     )
     parser.add_argument(
         "-n",
@@ -70,14 +79,10 @@ def csv_query(arguments: CliArguments) -> int:
     signal(SIGPIPE, SIG_DFL)
 
     with open(arguments.input_file, newline="", encoding=arguments.encoding) as csvfile:
-        fieldnames = [
-            # 'col1',
-            # 'col2',
-            # 'col3',
-        ]
+        fieldnames = arguments.fieldnames.split(",") if arguments.fieldnames else None
         reader = csv.DictReader(
             csvfile,
-            # fieldnames=fieldnames,
+            fieldnames=fieldnames,
             delimiter=",",
             quotechar='"',
             skipinitialspace=True,  # Ignore spaces in the beginning of the field
