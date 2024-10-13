@@ -16,8 +16,8 @@ class Node(ABC):
     def evaluate(self, *args, **kwargs):
         pass
 
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.children)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.children})"
 
 
 class Grammar(Node):
@@ -43,8 +43,8 @@ class Grammar(Node):
         exprs = value
         return Grammar(exprs=exprs)
 
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.expressions)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.expressions})"
 
 
 class Expression(Node):
@@ -70,8 +70,8 @@ class Expression(Node):
         exprs = value
         return Expression(exprs=exprs)
 
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.expressions)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.expressions})"
 
 
 class Identifier(Node):
@@ -93,8 +93,8 @@ class Identifier(Node):
         value = value[0]
         return Identifier(value=value)
 
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.value)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.value})"
 
 
 class Comparison(Node):
@@ -120,13 +120,8 @@ class Comparison(Node):
         value = value[2]
         return Comparison(ident=ident, oper=oper, value=value)
 
-    def __repr__(self):
-        return "%s(%s, %s, %s)" % (
-            self.__class__.__name__,
-            self.identifier,
-            self.operator,
-            self.value,
-        )
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.identifier}, {self.operator}, {self.value})"
 
     def _exec(self, operator, left, right):
         """
@@ -165,8 +160,8 @@ class CmpOperator(Node):
         operator = value
         return CmpOperator(operator=operator)
 
-    def __repr__(self):
-        return '%s("%s")' % (self.__class__.__name__, self.operator)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}("{self.operator}")'
 
 
 class BoolUnaryOperator(Node):
@@ -185,8 +180,8 @@ class BoolUnaryOperator(Node):
         operator = value[0]
         return BoolUnaryOperator(operator=operator)
 
-    def __repr__(self):
-        return '%s("%s")' % (self.__class__.__name__, self.operator)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}("{self.operator}")'
 
 
 class NegateExpression(Node):
@@ -215,8 +210,8 @@ class NegateExpression(Node):
         expr = value[1]
         return NegateExpression(expr=expr)
 
-    def __repr__(self):
-        return "%s(%s)" % (self.__class__.__name__, self.expression)
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.expression})"
 
     def _exec(self, operator, right):
         """
@@ -251,13 +246,8 @@ class BinaryExpression(Node):
         right = value[2]
         return BinaryExpression(left=left, operator=operator, right=right)
 
-    def __repr__(self):
-        return "%s(%s, %s, %s)" % (
-            self.__class__.__name__,
-            self.left,
-            self.operator,
-            self.right,
-        )
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.left}, {self.operator}, {self.right})"
 
     def _exec(self, operator, left, right):
         """
@@ -290,8 +280,8 @@ class BoolBinaryOperator(Node):
         operator = value[0]
         return BoolBinaryOperator(operator=operator)
 
-    def __repr__(self):
-        return '%s("%s")' % (self.__class__.__name__, self.operator)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}("{self.operator}")'
 
 
 class LiteralValue(Node):
@@ -309,8 +299,8 @@ class LiteralValue(Node):
         value = tokens[0]
         return LiteralValue(value=value)
 
-    def __repr__(self):
-        return '%s("%s")' % (self.__class__.__name__, self.value)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}("{self.value}")'
 
 
 class Attribute(Node):
@@ -329,5 +319,5 @@ class Attribute(Node):
         name = value
         return Attribute(name=name)
 
-    def __repr__(self):
-        return '%s("%s")' % (self.__class__.__name__, self.name)
+    def __repr__(self) -> str:
+        return f'{self.__class__.__name__}("{self.name}")'
