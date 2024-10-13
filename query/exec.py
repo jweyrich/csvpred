@@ -1,4 +1,7 @@
 def exec_bool_unary_operator(operator, right):
+    """
+    Execute a boolean unary operator.
+    """
     # print("#### exec_bool_unary_operator", operator, right)
     if operator == "not":
         return not right
@@ -7,6 +10,9 @@ def exec_bool_unary_operator(operator, right):
 
 
 def exec_bool_binary_operator(operator, left, right):
+    """
+    Execute a boolean binary operator.
+    """
     # print("#### exec_bool_binary_operator", operator, left, right)
     operator = operator.lower()
     if operator == "and" or operator == "&&":
@@ -20,7 +26,10 @@ def exec_bool_binary_operator(operator, left, right):
 
 
 def exec_cmp_operator(operator, left, right):
-    # print("#### exec_operator", operator, left, right)
+    """
+    Execute a comparison operator.
+    """
+    # print("#### exec_cmp_operator", operator, left, right)
     if operator == "==":
         return left == right
     elif operator == "!=":
