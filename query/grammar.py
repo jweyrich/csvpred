@@ -18,24 +18,22 @@ from .nodes import (
     NegateExpression,
 )
 
-#
-# Define the PEG for the filter predicate
-#
-
 lparen = pp.Suppress("(")
 rparen = pp.Suppress(")")
 
-# Bool operators
+# Define the boolean operators
 and_, and_symbol, or_, or_symbol, not_, not_symbol, xor_, xor_symbol = (
     pp.CaselessKeyword.using_each("AND && OR || NOT ! XOR ^".split())
 )
 
+# Define the unary operators
 bool_unary_operator = (
     pp.Group(not_ | not_symbol)
     .set_results_name("bool_unary_operator")
     .set_parse_action(BoolUnaryOperator.parse)
 )
 
+# Define the binary operators
 bool_binary_operator = (
     pp.Group(and_ | and_symbol | or_ | or_symbol | xor_ | xor_symbol)
     .set_results_name("bool_binary_operator")
@@ -75,25 +73,26 @@ literal_string = (
     .set_parse_action(lambda tokens: tokens[0])
 )
 
-# How to find the non-alphanum character set? `grep -o . data.csv | sort | uniq -c`
+# A literal value is either a float, an integer, or a string
 literal_value = (
     (literal_float | literal_integer | literal_string)
     .set_results_name("literal_value")
     .set_parse_action(LiteralValue.parse)
 )
 
-# Attribute starts with a dot followed by a sequence of letters, digits, underscores, dashes
+# An attribute starts with a dot followed by a literal string
 attribute = (
     pp.Group(pp.Suppress(".") + literal_string)
     .set_results_name("attribute")
     .set_parse_action(Attribute.parse)
 )
 
+# An identifier is an attribute
 identifier = (
     pp.Group(attribute).set_name("identifier").set_parse_action(Identifier.parse)
 )
 
-# A comparison has an identifier, an operator, and a value
+# A comparison is a sequence of an identifier, a comparison operator, and a literal value
 comparison = (
     pp.Group(identifier + cmp_operator + literal_value)
     .set_results_name("comparison")
@@ -106,7 +105,7 @@ binary_expression = pp.Forward()
 expression = pp.Forward().set_name("expression")
 expression <<= (
     # ~not_
-    # # + pp.Opt(and_condition + pp.ZeroOrMore(or_ + and_condition))
+    # + pp.Opt(and_condition + pp.ZeroOrMore(or_ + and_condition))
     # + pp.Opt(pp.Group(condition + bool_binary_operator + condition))
     # + pp.Opt(condition)
     pp.Opt(binary_expression)
