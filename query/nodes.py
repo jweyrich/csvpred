@@ -48,6 +48,7 @@ class Grammar(ASTNode):
             raise ValueError(f"Unknown grammar {type(self)} {self}")
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the grammar.
@@ -86,6 +87,7 @@ class Expression(ASTNode):
             raise ValueError(f"Unknown expression {type(self)} {self}")
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the expression.
@@ -120,6 +122,7 @@ class Identifier(ASTNode):
             raise ValueError(f"Unknown identifier {type(self)} {self}")
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the identifier.
@@ -156,6 +159,7 @@ class Comparison(ASTNode):
         return self.apply(operator, left, right)
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the comparison.
@@ -208,6 +212,7 @@ class CmpOperator(ASTNode):
         return self.operator
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the comparison operator.
@@ -238,6 +243,7 @@ class BoolUnaryOperator(ASTNode):
         return self.operator
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the boolean unary operator.
@@ -270,6 +276,7 @@ class NegateExpression(ASTNode):
         return self.apply("not", right)
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the negate expression.
@@ -324,6 +331,7 @@ class BinaryExpression(ASTNode):
         return self.apply(operator, left, right)
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the binary expression.
@@ -370,6 +378,7 @@ class BoolBinaryOperator(ASTNode):
         return self.operator
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the boolean binary operator.
@@ -400,6 +409,7 @@ class LiteralValue(ASTNode):
         return self.value
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the literal value.
@@ -434,6 +444,7 @@ class Attribute(ASTNode):
             return None
 
     @staticmethod
+    # pylint: disable-next=unused-argument
     def parse(string, location, tokens: pp.ParseResults) -> Self:
         """
         Parse the attribute.
