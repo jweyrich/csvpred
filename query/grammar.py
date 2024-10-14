@@ -40,23 +40,16 @@ bool_binary_operator = (
 # keyword = and_ | and2 | or_ | or2 | not_ | not2 | xor_ | xor2
 
 # A number is a sequence of digits, optionally preceded by a minus sign
-integer_ = (
+literal_integer = (
     pp.Regex(r"[+-]?\d+")
     .set_name("integer")
     .add_parse_action(lambda tokens: int(tokens[0]))
 )
 
-float_ = (
+literal_float = (
     pp.Regex(r"[+-]?\d+\.\d*([Ee][+-]?\d+)?")
     .set_name("float")
     .add_parse_action(lambda tokens: float(tokens[0]))
-)
-
-# Attribute starts with a dot followed by a sequence of letters, digits, underscores, dashes
-attribute = (
-    pp.Group(pp.Suppress(".") + pp.Word(pp.alphas + "_-", pp.alphanums + "_-"))
-    .set_results_name("attribute")
-    .set_parse_action(Attribute.parse)
 )
 
 cmp_operator = (
@@ -67,12 +60,30 @@ cmp_operator = (
 
 quoted_string = pp.QuotedString('"')
 
+# An unquoted string starts with a letter or underscore, followed by
+# 0 or more letters, digits, or underscores
+unquoted_string = (
+    pp.Word(pp.alphas + "_", pp.alphanums + "_")
+)
+
+literal_string = (
+    (quoted_string | unquoted_string)
+    .set_results_name("literal_string")
+    .set_parse_action(lambda tokens: tokens[0])
+)
+
 # How to find the non-alphanum character set? `grep -o . data.csv | sort | uniq -c`
 literal_value = (
-    # (pp.Word(pp.alphanums + "#&-./:=?_`") | pp.QuotedString('"') | integer_ | float_)
-    (float_ | integer_ | pp.Word(pp.alphanums + "-_") | quoted_string)
+    (literal_float | literal_integer | literal_string)
     .set_results_name("literal_value")
     .set_parse_action(LiteralValue.parse)
+)
+
+# Attribute starts with a dot followed by a sequence of letters, digits, underscores, dashes
+attribute = (
+    pp.Group(pp.Suppress(".") + literal_string)
+    .set_results_name("attribute")
+    .set_parse_action(Attribute.parse)
 )
 
 identifier = (
