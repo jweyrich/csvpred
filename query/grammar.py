@@ -125,7 +125,7 @@ negate_expression <<= (
 
 binary_expression <<= (
     # FIXME(jweyrich): Figure out how to make this work with `expression`s instead of `comparison`s.
-    pp.Group(comparison + bool_binary_operator + comparison)
+    pp.Group(comparison + bool_binary_operator + expression)
     .set_results_name("binary_expression")
     .set_parse_action(BinaryExpression.parse)
 )
