@@ -26,22 +26,23 @@ lparen = pp.Suppress("(")
 rparen = pp.Suppress(")")
 
 # Bool operators
-and_, and2, or_, or2, not_, not2, xor_, xor2 = pp.CaselessKeyword.using_each(
-    "AND && OR || NOT ! XOR ^".split()
+and_, and_symbol, or_, or_symbol, not_, not_symbol, xor_, xor_symbol = (
+    pp.CaselessKeyword.using_each("AND && OR || NOT ! XOR ^".split())
 )
 
 bool_unary_operator = (
-    pp.Group(not_ | not2)
+    pp.Group(not_ | not_symbol)
     .set_results_name("bool_unary_operator")
     .set_parse_action(BoolUnaryOperator.parse)
 )
 
 bool_binary_operator = (
-    pp.Group(and_ | and2 | or_ | or2 | xor_ | xor2)
+    pp.Group(and_ | and_symbol | or_ | or_symbol | xor_ | xor_symbol)
     .set_results_name("bool_binary_operator")
     .set_parse_action(BoolBinaryOperator.parse)
 )
-# keyword = and_ | and2 | or_ | or2 | not_ | not2 | xor_ | xor2
+
+# keyword = and_ | and_symbol | or_ | or_symbol | not_ | not_symbol | xor_ | xor_symbol
 
 # A number is a sequence of digits, optionally preceded by a minus sign
 literal_integer = (
@@ -136,23 +137,23 @@ grammar <<= (
         expression,
         [
             # (
-            #     (not_ | not2).set_parse_action(NegateExpression.parse),
+            #     (not_ | not_symbol).set_parse_action(NegateExpression.parse),
             #     1,
             #     pp.OpAssoc.RIGHT,
             #     lambda tokens: ["not", tokens]
             # ),
             (
-                (and_ | and2).set_parse_action(BoolBinaryOperator.parse),
+                (and_ | and_symbol).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
             (
-                (or_ | or2).set_parse_action(BoolBinaryOperator.parse),
+                (or_ | or_symbol).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
             (
-                (xor_ | xor2).set_parse_action(BoolBinaryOperator.parse),
+                (xor_ | xor_symbol).set_parse_action(BoolBinaryOperator.parse),
                 2,
                 pp.OpAssoc.LEFT,
             ),
