@@ -58,7 +58,7 @@ def csv_query(arguments: CliArguments) -> int:
             error_message = e.args[0]
             print(error_message, file=sys.stderr)
             print(f"> {arguments.query}", file=sys.stderr)
-            print(' ' * (e.column - 1 + len('> ')) + '^', file=sys.stderr)
+            print(" " * (e.column - 1 + len("> ")) + "^", file=sys.stderr)
             return 1
 
         if arguments.debug_ast:
