@@ -1,3 +1,7 @@
+"""
+This module provides a function to parse command line arguments
+"""
+
 import argparse
 from dataclasses import dataclass
 from typing import Optional

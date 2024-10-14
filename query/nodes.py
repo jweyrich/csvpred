@@ -1,3 +1,7 @@
+"""
+This module contains the classes for the nodes in the AST.
+"""
+
 import sys
 from abc import ABC, abstractmethod
 from typing import Self
@@ -5,7 +9,7 @@ from typing import Self
 import pyparsing as pp
 
 
-class Node(ABC):
+class ASTNode(ABC):
     """
     Base class for all nodes in the AST.
     """
@@ -14,23 +18,29 @@ class Node(ABC):
         self.children = children
 
     @abstractmethod
-    def evaluate(self, *args, **kwargs):
-        pass
+    def evaluate(self):
+        """
+        Evaluate the node.
+        """
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.children})"
 
 
-class Grammar(Node):
+class Grammar(ASTNode):
     """
-    The top-level grammar node.
+    Represents the top-level grammar node in the AST.
     """
 
     def __init__(self, exprs):
         super().__init__([exprs])
         self.expressions = exprs
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the grammar.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         if isinstance(self.expressions, Expression):
             return self.expressions.evaluate(row)
@@ -39,6 +49,9 @@ class Grammar(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the grammar.
+        """
         # print(f"{Grammar.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         exprs = value
@@ -48,12 +61,20 @@ class Grammar(Node):
         return f"{self.__class__.__name__}({self.expressions})"
 
 
-class Expression(Node):
+class Expression(ASTNode):
+    """
+    Represents an expression node in the AST.
+    """
+
     def __init__(self, exprs):
         super().__init__([exprs])
         self.expressions = exprs
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the expression.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         accepted_types = (
             Expression | NegateExpression | BinaryExpression | Comparison | Identifier
@@ -66,6 +87,9 @@ class Expression(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the expression.
+        """
         # print(f"{Expression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         exprs = value
@@ -75,12 +99,20 @@ class Expression(Node):
         return f"{self.__class__.__name__}({self.expressions})"
 
 
-class Identifier(Node):
+class Identifier(ASTNode):
+    """
+    Represents an identifier node in the AST.
+    """
+
     def __init__(self, value):
         super().__init__([value])
         self.value = value
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the identifier.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         if isinstance(self.value, Attribute):
             return self.value.evaluate(row)
@@ -89,6 +121,9 @@ class Identifier(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the identifier.
+        """
         # print(f"{Identifier.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         value = value[0]
@@ -98,22 +133,33 @@ class Identifier(Node):
         return f"{self.__class__.__name__}({self.value})"
 
 
-class Comparison(Node):
+class Comparison(ASTNode):
+    """
+    Represents a comparison node in the AST.
+    """
+
     def __init__(self, ident, oper, value):
         super().__init__([ident, oper, value])
         self.identifier = ident
         self.operator = oper
         self.value = value
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the comparison.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         left = self.identifier.evaluate(row)
         operator = self.operator.evaluate()
         right = self.value.evaluate()
-        return self._exec(operator, left, right)
+        return self.apply(operator, left, right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the comparison.
+        """
         # print(f"{Comparison.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         ident = value[0]
@@ -124,9 +170,9 @@ class Comparison(Node):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.identifier}, {self.operator}, {self.value})"
 
-    def _exec(self, operator, left, right):
+    def apply(self, operator, left, right):
         """
-        Execute a comparison operator.
+        Apply a comparison operator.
         """
         # print("#### exec_cmp_operator", operator, left, right)
         if operator == "==":
@@ -145,17 +191,27 @@ class Comparison(Node):
             raise ValueError(f"Unknown operator {operator}")
 
 
-class CmpOperator(Node):
+class CmpOperator(ASTNode):
+    """
+    Represents a comparison operator node in the AST.
+    """
+
     def __init__(self, operator):
         super().__init__([operator])
         self.operator = operator
 
     def evaluate(self):
+        """
+        Evaluate the comparison operator.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         return self.operator
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the comparison operator.
+        """
         # print(f"{CmpOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value
@@ -165,17 +221,27 @@ class CmpOperator(Node):
         return f'{self.__class__.__name__}("{self.operator}")'
 
 
-class BoolUnaryOperator(Node):
+class BoolUnaryOperator(ASTNode):
+    """
+    Represents a boolean unary operator node in the AST.
+    """
+
     def __init__(self, operator):
         super().__init__([operator])
         self.operator = operator
 
     def evaluate(self):
+        """
+        Evaluate the boolean unary operator.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         return self.operator
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the boolean unary operator.
+        """
         # print(f"{BoolUnaryOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
@@ -185,18 +251,29 @@ class BoolUnaryOperator(Node):
         return f'{self.__class__.__name__}("{self.operator}")'
 
 
-class NegateExpression(Node):
+class NegateExpression(ASTNode):
+    """
+    Represents a negate expression node in the AST.
+    """
+
     def __init__(self, expr):
         super().__init__([expr])
         self.expression = expr
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the negate expression.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         right = self.expression.evaluate(row)
-        return self._exec("not", right)
+        return self.apply("not", right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the negate expression.
+        """
         # print(f"{NegateExpression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
@@ -214,9 +291,9 @@ class NegateExpression(Node):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.expression})"
 
-    def _exec(self, operator, right):
+    def apply(self, operator, right):
         """
-        Execute a boolean unary operator.
+        Apply a boolean unary operator.
         """
         if operator == "not" or operator == "!":
             return not right
@@ -224,22 +301,33 @@ class NegateExpression(Node):
             raise ValueError(f"Unknown bool_unary_operator {operator}")
 
 
-class BinaryExpression(Node):
+class BinaryExpression(ASTNode):
+    """
+    Represents a binary expression node in the AST.
+    """
+
     def __init__(self, left, operator, right):
         super().__init__([left, operator, right])
         self.left = left
         self.operator = operator
         self.right = right
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the binary expression.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         left = self.left.evaluate(row)
         operator = self.operator.evaluate()
         right = self.right.evaluate(row)
-        return self._exec(operator, left, right)
+        return self.apply(operator, left, right)
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the binary expression.
+        """
         # print(f"{BinaryExpression.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         left = value[0]
@@ -250,9 +338,9 @@ class BinaryExpression(Node):
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.left}, {self.operator}, {self.right})"
 
-    def _exec(self, operator, left, right):
+    def apply(self, operator, left, right):
         """
-        Execute a boolean binary operator.
+        Apply a boolean binary operator.
         """
         operator = operator.lower()
         if operator == "and" or operator == "&&":
@@ -265,17 +353,27 @@ class BinaryExpression(Node):
             raise ValueError(f"Unknown bool_binary_operator {operator}")
 
 
-class BoolBinaryOperator(Node):
+class BoolBinaryOperator(ASTNode):
+    """
+    Represents a boolean binary operator node in the AST.
+    """
+
     def __init__(self, operator):
         super().__init__([operator])
         self.operator = operator
 
     def evaluate(self):
+        """
+        Evaluate the boolean binary operator.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         return self.operator
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the boolean binary operator.
+        """
         # print(f"{BoolBinaryOperator.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         operator = value[0]
@@ -285,17 +383,27 @@ class BoolBinaryOperator(Node):
         return f'{self.__class__.__name__}("{self.operator}")'
 
 
-class LiteralValue(Node):
+class LiteralValue(ASTNode):
+    """
+    Represents a literal value node in the AST.
+    """
+
     def __init__(self, value):
         super().__init__([value])
         self.value = value
 
     def evaluate(self):
+        """
+        Evaluate the literal value.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         return self.value
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the literal value.
+        """
         # print(f"{LiteralValue.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         return LiteralValue(value=value)
@@ -304,12 +412,20 @@ class LiteralValue(Node):
         return f'{self.__class__.__name__}("{self.value}")'
 
 
-class Attribute(Node):
+class Attribute(ASTNode):
+    """
+    Represents an attribute node in the AST.
+    """
+
     def __init__(self, name):
         super().__init__([name])
         self.name = name
 
+    # pylint: disable-next=arguments-differ
     def evaluate(self, row):
+        """
+        Evaluate the attribute.
+        """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         try:
             return row[self.name]
@@ -319,6 +435,9 @@ class Attribute(Node):
 
     @staticmethod
     def parse(string, location, tokens: pp.ParseResults) -> Self:
+        """
+        Parse the attribute.
+        """
         # print(f"{Attribute.__name__}.parse: {repr(tokens)}")
         value = tokens[0]
         name = value[0]

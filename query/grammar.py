@@ -1,3 +1,7 @@
+"""
+This module defines the grammar for the filter predicate.
+"""
+
 import pyparsing as pp
 
 from .nodes import (

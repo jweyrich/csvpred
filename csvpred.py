@@ -1,3 +1,7 @@
+"""
+This is the main module for the csvpred command line tool.
+"""
+
 import csv
 import json
 import sys

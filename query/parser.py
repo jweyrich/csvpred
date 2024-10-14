@@ -1,15 +1,20 @@
+"""
+Parser module for the query language.
+"""
+
 import sys
 
 import pyparsing as pp
 
 from .grammar import grammar
-from .nodes import Node
+from .nodes import ASTNode
 
 
 class ParserException(Exception):
     """
     Exception raised when a parser error occurs.
     """
+
     def __init__(self, message: str, cause: pp.ParseException):
         super().__init__(message)
         self.row = cause.lineno
@@ -39,7 +44,7 @@ class Parser(object):
             self._parse_results = parse_results
             return self._parse_results
 
-    def dump_ast(self, node: Node):
+    def dump_ast(self, node: ASTNode):
         """
         Dump the AST to the console.
         """
@@ -53,7 +58,7 @@ class Parser(object):
         """
         text = f"('{node}')" if isinstance(node, str | float | int) else ""
         print(tab + "┗━ " + str(node.__class__.__name__) + text, file=sys.stderr)
-        if isinstance(node, Node):
+        if isinstance(node, ASTNode):
             for child in node.children:
                 self._dump_ast_node_recursively(child, tab + "   ")
         elif isinstance(node, pp.ParseResults):
