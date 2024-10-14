@@ -5,13 +5,14 @@ from signal import SIG_DFL, SIGPIPE, signal
 
 from arguments import CliArguments, arguments_parse
 from query.grammar import Grammar
-from query.parser import Parser
+from query.parser import Parser, ParserException
 
 
 def make_filter(ast):
     """
     Create a filter function to filter each row
     """
+
     def run_filter(row) -> bool:
         # The first element of the AST is the Grammar node
         grammar = ast[0]
@@ -47,7 +48,14 @@ def csv_query(arguments: CliArguments) -> int:
         #     print(header)
 
         parser = Parser(arguments.query)
-        ast = parser.parse()
+        try:
+            ast = parser.parse()
+        except ParserException as e:
+            error_message = e.args[0]
+            print(error_message, file=sys.stderr)
+            print(f"> {arguments.query}", file=sys.stderr)
+            print(' ' * (e.column - 1 + len('> ')) + '^', file=sys.stderr)
+            return 1
 
         if arguments.debug_ast:
             parser.dump_ast(ast)

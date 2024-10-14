@@ -10,6 +10,11 @@ class ParserException(Exception):
     """
     Exception raised when a parser error occurs.
     """
+    def __init__(self, message: str, cause: pp.ParseException):
+        super().__init__(message)
+        self.row = cause.lineno
+        self.column = cause.col
+        self.mark_input_line = cause.markInputline()
 
 
 class Parser(object):
@@ -28,9 +33,8 @@ class Parser(object):
         try:
             parse_results = grammar.parse_string(self.original_input, parse_all=True)
         except pp.ParseException as e:
-            raise ParserException(
-                f"Syntax error at line {e.lineno} col {e.col}: {e.markInputline()}"
-            ) from e
+            message = f"Query syntax error at line {e.lineno} col {e.col}"
+            raise ParserException(message=message, cause=e) from e
         else:
             self._parse_results = parse_results
             return self._parse_results
