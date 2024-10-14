@@ -66,9 +66,7 @@ quoted_string = pp.QuotedString('"')
 
 # An unquoted string starts with a letter or underscore, followed by
 # 0 or more letters, digits, or underscores
-unquoted_string = (
-    pp.Word(pp.alphas + "_", pp.alphanums + "_")
-)
+unquoted_string = pp.Word(pp.alphas + "_", pp.alphanums + "_")
 
 literal_string = (
     (quoted_string | unquoted_string)
@@ -138,9 +136,10 @@ grammar <<= (
         expression,
         [
             # (
-            #     (not_ | not2).set_parse_action(negate_expression_action),
+            #     (not_ | not2).set_parse_action(NegateExpression.parse),
             #     1,
             #     pp.OpAssoc.RIGHT,
+            #     lambda tokens: ["not", tokens]
             # ),
             (
                 (and_ | and2).set_parse_action(BoolBinaryOperator.parse),
@@ -157,9 +156,6 @@ grammar <<= (
                 2,
                 pp.OpAssoc.LEFT,
             ),
-            # (and_, 2, pp.OpAssoc.LEFT, lambda tokens: ["and", tokens[0], tokens[2]]),
-            # (or_, 2, pp.OpAssoc.LEFT, lambda tokens: ["or", tokens[0], tokens[2]]),
-            # (xor_, 2, pp.OpAssoc.LEFT, lambda tokens: ["xor", tokens[0], tokens[2]]),
         ],
     )
     .set_name("grammar")
