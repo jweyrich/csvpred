@@ -18,6 +18,12 @@ from .nodes import (
     NegateExpression,
 )
 
+# IMPORTANT: Enable left recursion
+pp.ParserElement.enable_left_recursion()
+
+# IMPORTANT: Enable all warnings
+pp.enable_all_warnings()
+
 lparen = pp.Suppress("(")
 rparen = pp.Suppress(")")
 
@@ -69,7 +75,6 @@ unquoted_string = pp.Word(pp.alphas + "_", pp.alphanums + "_")
 
 literal_string = (
     (quoted_string | unquoted_string)
-    .set_results_name("literal_string")
     .set_parse_action(lambda tokens: tokens[0])
 )
 
