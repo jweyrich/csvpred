@@ -47,17 +47,6 @@ class Grammar(ASTNode):
         else:
             raise ValueError(f"Unknown grammar {type(self)} {self}")
 
-    @staticmethod
-    # pylint: disable-next=unused-argument
-    def parse(string, location, tokens: pp.ParseResults) -> Self:
-        """
-        Parse the grammar.
-        """
-        # print(f"{Grammar.__name__}.parse: {repr(tokens)}")
-        value = tokens[0]
-        exprs = value
-        return Grammar(exprs=exprs)
-
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.expressions})"
 
@@ -85,17 +74,6 @@ class Expression(ASTNode):
             return self.expressions.evaluate(row)
         else:
             raise ValueError(f"Unknown expression {type(self)} {self}")
-
-    @staticmethod
-    # pylint: disable-next=unused-argument
-    def parse(string, location, tokens: pp.ParseResults) -> Self:
-        """
-        Parse the expression.
-        """
-        # print(f"{Expression.__name__}.parse: {repr(tokens)}")
-        value = tokens[0]
-        exprs = value
-        return Expression(exprs=exprs)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.expressions})"
@@ -275,26 +253,6 @@ class NegateExpression(ASTNode):
         right = self.expression.evaluate(row)
         return self.apply("not", right)
 
-    @staticmethod
-    # pylint: disable-next=unused-argument
-    def parse(string, location, tokens: pp.ParseResults) -> Self:
-        """
-        Parse the negate expression.
-        """
-        # print(f"{NegateExpression.__name__}.parse: {repr(tokens)}")
-        value = tokens[0]
-        operator = value[0]
-        not_opers = ["NOT", "!"]
-        if (
-            not isinstance(operator, BoolUnaryOperator)
-            or not operator.operator in not_opers
-        ):
-            raise ValueError(
-                f"Expected a BoolUnaryOperator, got {type(operator)} {operator}"
-            )
-        expr = value[1]
-        return NegateExpression(expr=expr)
-
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.expression})"
 
@@ -329,19 +287,6 @@ class BinaryExpression(ASTNode):
         operator = self.operator.evaluate()
         right = self.right.evaluate(row)
         return self.apply(operator, left, right)
-
-    @staticmethod
-    # pylint: disable-next=unused-argument
-    def parse(string, location, tokens: pp.ParseResults) -> Self:
-        """
-        Parse the binary expression.
-        """
-        # print(f"{BinaryExpression.__name__}.parse: {repr(tokens)}")
-        value = tokens[0]
-        left = value[0]
-        operator = value[1]
-        right = value[2]
-        return BinaryExpression(left=left, operator=operator, right=right)
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}({self.left}, {self.operator}, {self.right})"
