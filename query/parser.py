@@ -31,19 +31,25 @@ class Parser(object):
         self.original_input = value
         self._parse_results = None
 
-    def parse(self) -> 'Grammar':
+    def parse(self) -> Grammar:
         """
         Parse the input string and return the grammar AST node.
         """
         try:
-            parse_results = grammar.parse_string(self.original_input, parse_all=True)
+            parse_results = grammar.parse_string(self.original_input or "", parse_all=True)
         except pp.ParseException as e:
             message = f"Query syntax error at line {e.lineno} col {e.col}"
             raise ParserException(message=message, cause=e) from e
         else:
             self._parse_results = parse_results
+            root_node = parse_results[0]
+            if not isinstance(root_node, Grammar):
+                raise ParserException(
+                    "Expected Grammar node as root of parse tree",
+                    cause=pp.ParseException("Invalid parse tree structure")
+                )
             # Return the Grammar node directly instead of ParseResults wrapper
-            return parse_results[0]
+            return root_node
 
     def dump_ast(self, node: ASTNode):
         """
@@ -62,9 +68,7 @@ class Parser(object):
         if isinstance(node, ASTNode):
             for child in node.children:
                 self._dump_ast_node_recursively(child, tab + "   ")
-        elif isinstance(node, pp.ParseResults):
+        elif isinstance(node, pp.ParseResults | list):
             for child in node:
                 self._dump_ast_node_recursively(child, tab + "   ")
-        elif isinstance(node, list):
-            for child in node:
-                self._dump_ast_node_recursively(child, tab + "   ")
+
