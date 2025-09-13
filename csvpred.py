@@ -12,16 +12,15 @@ from query.grammar import Grammar
 from query.parser import Parser, ParserException
 
 
-def make_filter(ast):
+def make_filter(grammar):
     """
     Create a filter function to filter each row
     """
+    # The first element of the AST is the Grammar node
+    if not isinstance(grammar, Grammar):
+        raise ValueError(f"Unknown grammar {grammar}")
 
     def run_filter(row) -> bool:
-        # The first element of the AST is the Grammar node
-        grammar = ast[0]
-        if not isinstance(grammar, Grammar):
-            raise ValueError(f"Unknown grammar {grammar}")
         result = grammar.evaluate(row)
         return result
 
@@ -53,7 +52,7 @@ def csv_query(arguments: CliArguments) -> int:
 
         parser = Parser(arguments.query)
         try:
-            ast = parser.parse()
+            grammar = parser.parse()
         except ParserException as e:
             error_message = e.args[0]
             print(error_message, file=sys.stderr)
@@ -62,9 +61,9 @@ def csv_query(arguments: CliArguments) -> int:
             return 1
 
         if arguments.debug_ast:
-            parser.dump_ast(ast)
+            parser.dump_ast(grammar)
 
-        filter_fn = make_filter(ast)
+        filter_fn = make_filter(grammar)
         results = list(filter(filter_fn, reader))
         output = json.dumps(results)
         print(output)
