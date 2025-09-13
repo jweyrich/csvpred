@@ -61,7 +61,7 @@ cmp_operator = (
     .set_parse_action(CmpOperator.parse)
 )
 
-quoted_string = pp.QuotedString('"')
+quoted_string = pp.QuotedString('"') | pp.QuotedString("'")
 
 # An unquoted string starts with a letter or underscore, followed by
 # 0 or more letters, digits, or underscores

@@ -32,6 +32,55 @@ class TestParser(unittest.TestCase):
             parser.parse()
         self.assertEqual(str(ctx.exception), "Query syntax error at line 1 col 2")
 
+    def test_single_quoted_string_literal(self):
+        query = ".name == 'hello'"
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue("hello"))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_double_quoted_string_literal(self):
+        query = '.name == "hello"'
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue("hello"))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_single_quoted_string_with_spaces(self):
+        query = ".name == 'hello world'"
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue("hello world"))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_single_quoted_string_with_numbers(self):
+        query = ".code == 'ABC123'"
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("code")), CmpOperator("=="), LiteralValue("ABC123"))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_single_quoted_string_with_special_chars(self):
+        query = ".name == 'user@domain.com'"
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue("user@domain.com"))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_empty_single_quoted_string(self):
+        query = ".name == ''"
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue(""))))], {})'
+        self.assertEqual(repr(ast), expected)
+
+    def test_empty_double_quoted_string(self):
+        query = '.name == ""'
+        parser = Parser(query)
+        ast = parser.parse()
+        expected = 'ParseResults([Grammar(Expression(Comparison(Identifier(Attribute("name")), CmpOperator("=="), LiteralValue(""))))], {})'
+        self.assertEqual(repr(ast), expected)
+
 
 if __name__ == "__main__":
     unittest.main()
