@@ -12,11 +12,10 @@ from query.grammar import Grammar
 from query.parser import Parser, ParserException
 
 
-def make_filter(grammar):
+def make_filter(grammar: Grammar):
     """
     Create a filter function to filter each row
     """
-    # The first element of the AST is the Grammar node
     if not isinstance(grammar, Grammar):
         raise ValueError(f"Unknown grammar {grammar}")
 
