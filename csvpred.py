@@ -48,8 +48,22 @@ def csv_query(arguments: CliArguments) -> int:
     # Ignore SIGPIPE signal when the output is piped to another command
     signal(SIGPIPE, SIG_DFL)
 
+    parser = Parser(arguments.query)
+    try:
+        grammar = parser.parse()
+    except ParserException as e:
+        error_message = e.args[0]
+        print(error_message, file=sys.stderr)
+        print(f"> {arguments.query}", file=sys.stderr)
+        print(" " * (e.column - 1 + len("> ")) + "^", file=sys.stderr)
+        return 1
+
+    if arguments.debug_ast:
+        parser.dump_ast(grammar)
+
+    fieldnames = arguments.fieldnames.split(",") if arguments.fieldnames else None
+
     with open_file(arguments.input_file, encoding=arguments.encoding) as csvfile:
-        fieldnames = arguments.fieldnames.split(",") if arguments.fieldnames else None
         reader = csv.DictReader(
             csvfile,
             fieldnames=fieldnames,
@@ -62,19 +76,6 @@ def csv_query(arguments: CliArguments) -> int:
         if not arguments.no_skip_header:
             # Skip header line
             next(reader)
-
-        parser = Parser(arguments.query)
-        try:
-            grammar = parser.parse()
-        except ParserException as e:
-            error_message = e.args[0]
-            print(error_message, file=sys.stderr)
-            print(f"> {arguments.query}", file=sys.stderr)
-            print(" " * (e.column - 1 + len("> ")) + "^", file=sys.stderr)
-            return 1
-
-        if arguments.debug_ast:
-            parser.dump_ast(grammar)
 
         filter_fn = make_filter(grammar)
         results = list(filter(filter_fn, reader))
