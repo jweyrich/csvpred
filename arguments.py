@@ -29,9 +29,9 @@ def arguments_parse() -> CliArguments:
     parser.add_argument(
         "-i",
         "--input-file",
-        required=True,
+        required=False,
         dest="input_file",
-        help="path to the input CSV file (default: %(default)s)",
+        help="path to the input CSV file. If not provided, read from stdin",
     )
     parser.add_argument(
         "--debug-ast",

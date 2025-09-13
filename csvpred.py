@@ -6,6 +6,7 @@ import csv
 import json
 import sys
 from signal import SIG_DFL, SIGPIPE, signal
+from typing import TextIO
 
 from arguments import CliArguments, arguments_parse
 from query.grammar import Grammar
@@ -26,6 +27,20 @@ def make_filter(grammar: Grammar):
     return run_filter
 
 
+def open_file(file_path: str | None, encoding: str | None) -> TextIO:
+    """
+    Open the file for reading.
+    If the file_path is None or "stdin", return sys.stdin
+    """
+    if not file_path or file_path == "stdin":
+        return sys.stdin
+    try:
+        return open(file_path, newline="", encoding=encoding)
+    except FileNotFoundError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
 def csv_query(arguments: CliArguments) -> int:
     """
     Run a filter on the CSV file and output the matching rows
@@ -33,7 +48,7 @@ def csv_query(arguments: CliArguments) -> int:
     # Ignore SIGPIPE signal when the output is piped to another command
     signal(SIGPIPE, SIG_DFL)
 
-    with open(arguments.input_file, newline="", encoding=arguments.encoding) as csvfile:
+    with open_file(arguments.input_file, encoding=arguments.encoding) as csvfile:
         fieldnames = arguments.fieldnames.split(",") if arguments.fieldnames else None
         reader = csv.DictReader(
             csvfile,
@@ -46,8 +61,7 @@ def csv_query(arguments: CliArguments) -> int:
 
         if not arguments.no_skip_header:
             # Skip header line
-            header = next(reader)
-            # print(header)
+            next(reader)
 
         parser = Parser(arguments.query)
         try:
