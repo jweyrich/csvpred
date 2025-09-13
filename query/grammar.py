@@ -99,65 +99,50 @@ comparison = (
     .set_parse_action(Comparison.parse)
 )
 
-negate_expression = pp.Forward()
-binary_expression = pp.Forward()
+base_expression = comparison
 
-expression = pp.Forward().set_name("expression")
-expression <<= (
-    # ~not_
-    # + pp.Opt(and_condition + pp.ZeroOrMore(or_ + and_condition))
-    # + pp.Opt(pp.Group(condition + bool_binary_operator + condition))
-    # + pp.Opt(condition)
-    pp.Opt(binary_expression)
-    + pp.Opt(negate_expression)
-    + pp.Opt(comparison)
-    + pp.Opt(lparen + expression + rparen)
-    + pp.Opt(identifier)
-    + pp.Opt(attribute)
-    + pp.Opt(literal_value)
-).set_parse_action(Expression.parse)
-
-negate_expression <<= (
-    pp.Group(bool_unary_operator + expression)
-    .set_results_name("negate_expression")
-    .set_parse_action(NegateExpression.parse)
-)
-
-binary_expression <<= (
-    # FIXME(jweyrich): Figure out how to make this work with `expression`s instead of `comparison`s.
-    pp.Group(comparison + bool_binary_operator + expression)
-    .set_results_name("binary_expression")
-    .set_parse_action(BinaryExpression.parse)
-)
-
-grammar = pp.Forward()
-grammar <<= (
+grammar = (
     pp.infix_notation(
-        expression,
+        base_expression,
         [
-            # (
-            #     (not_ | not_symbol).set_parse_action(NegateExpression.parse),
-            #     1,
-            #     pp.OpAssoc.RIGHT,
-            #     lambda tokens: ["not", tokens]
-            # ),
             (
-                (and_ | and_symbol).set_parse_action(BoolBinaryOperator.parse),
-                2,
-                pp.OpAssoc.LEFT,
+                (not_ | not_symbol),
+                1,
+                pp.OpAssoc.RIGHT,
+                lambda tokens: NegateExpression(Expression(tokens[0][1]))
             ),
             (
-                (or_ | or_symbol).set_parse_action(BoolBinaryOperator.parse),
+                (and_ | and_symbol),
                 2,
                 pp.OpAssoc.LEFT,
+                lambda tokens: BinaryExpression(
+                    Expression(tokens[0][0]),
+                    BoolBinaryOperator("AND"),
+                    Expression(tokens[0][2])
+                )
             ),
             (
-                (xor_ | xor_symbol).set_parse_action(BoolBinaryOperator.parse),
+                (or_ | or_symbol),
                 2,
                 pp.OpAssoc.LEFT,
+                lambda tokens: BinaryExpression(
+                    Expression(tokens[0][0]),
+                    BoolBinaryOperator("OR"),
+                    Expression(tokens[0][2])
+                )
+            ),
+            (
+                (xor_ | xor_symbol),
+                2,
+                pp.OpAssoc.LEFT,
+                lambda tokens: BinaryExpression(
+                    Expression(tokens[0][0]),
+                    BoolBinaryOperator("XOR"),
+                    Expression(tokens[0][2])
+                )
             ),
         ],
     )
     .set_name("grammar")
-    .set_parse_action(Grammar.parse)
+    .set_parse_action(lambda tokens: Grammar(Expression(tokens[0])))
 )

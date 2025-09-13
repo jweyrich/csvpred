@@ -78,7 +78,7 @@ class Expression(ASTNode):
         """
         # print(f"#### {self.__class__.__name__}.evaluate {repr(self)}")
         accepted_types = (
-            Expression | NegateExpression | BinaryExpression | Comparison | Identifier
+            Expression | NegateExpression | BinaryExpression | Comparison | Identifier | Grammar
         )
         # This requires Python >= 3.10 (PEP 604)
         if isinstance(self.expressions, accepted_types):

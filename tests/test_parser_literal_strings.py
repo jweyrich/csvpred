@@ -23,14 +23,14 @@ class TestParser(unittest.TestCase):
         parser = Parser(query)
         with self.assertRaises(ParserException) as ctx:
             parser.parse()
-        self.assertEqual(str(ctx.exception), "Query syntax error at line 1 col 1")
+        self.assertEqual(str(ctx.exception), "Query syntax error at line 1 col 2")
 
     def test_literal_string_starting_with_number(self):
         query = ".123 == 0.5"
         parser = Parser(query)
         with self.assertRaises(ParserException) as ctx:
             parser.parse()
-        self.assertEqual(str(ctx.exception), "Query syntax error at line 1 col 1")
+        self.assertEqual(str(ctx.exception), "Query syntax error at line 1 col 2")
 
 
 if __name__ == "__main__":
