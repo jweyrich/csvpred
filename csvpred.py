@@ -45,10 +45,10 @@ def csv_query(arguments: CliArguments) -> int:
             skipinitialspace=True,  # Ignore spaces in the beginning of the field
         )
 
-        # if not arguments.no_skip_header:
-        #     # Skip header line
-        #     header = next(reader)
-        #     print(header)
+        if not arguments.no_skip_header:
+            # Skip header line
+            header = next(reader)
+            # print(header)
 
         parser = Parser(arguments.query)
         try:
