@@ -24,13 +24,11 @@ pp.ParserElement.enable_left_recursion()
 # IMPORTANT: Enable all warnings
 pp.enable_all_warnings()
 
-lparen = pp.Suppress("(")
-rparen = pp.Suppress(")")
+lparen, rparen = pp.Suppress("("), pp.Suppress(")")
 
 # Define the boolean operators
-and_, and_symbol, or_, or_symbol, not_, not_symbol, xor_, xor_symbol = (
-    pp.CaselessKeyword.using_each("AND && OR || NOT ! XOR ^".split())
-)
+and_, or_, not_, xor_ = pp.CaselessKeyword.using_each("AND OR NOT XOR".split())
+and_symbol, or_symbol, not_symbol, xor_symbol = pp.Keyword.using_each("&& || ! ^".split())
 
 # Define the unary operators
 bool_unary_operator = (
@@ -48,13 +46,15 @@ bool_binary_operator = (
 
 # keyword = and_ | and_symbol | or_ | or_symbol | not_ | not_symbol | xor_ | xor_symbol
 
-# A number is a sequence of digits, optionally preceded by a minus sign
+# An integer is a sequence of digits, optionally preceded by a minus sign
 literal_integer = (
     pp.Regex(r"[+-]?\d+")
     .set_name("integer")
     .add_parse_action(lambda tokens: int(tokens[0]))
 )
 
+# A float is a sequence of digits, optionally preceded by a minus sign,
+# and optionally followed by a decimal point and more digits
 literal_float = (
     pp.Regex(r"[+-]?\d+\.\d*([Ee][+-]?\d+)?")
     .set_name("float")
