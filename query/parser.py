@@ -7,7 +7,7 @@ import sys
 import pyparsing as pp
 
 from .grammar import grammar
-from .nodes import ASTNode
+from .nodes import ASTNode, Grammar
 
 
 class ParserException(Exception):
@@ -31,9 +31,9 @@ class Parser(object):
         self.original_input = value
         self._parse_results = None
 
-    def parse(self) -> pp.ParseResults:
+    def parse(self) -> 'Grammar':
         """
-        Parse the input string and return the parse results.
+        Parse the input string and return the grammar AST node.
         """
         try:
             parse_results = grammar.parse_string(self.original_input, parse_all=True)
@@ -42,7 +42,8 @@ class Parser(object):
             raise ParserException(message=message, cause=e) from e
         else:
             self._parse_results = parse_results
-            return self._parse_results
+            # Return the Grammar node directly instead of ParseResults wrapper
+            return parse_results[0]
 
     def dump_ast(self, node: ASTNode):
         """
